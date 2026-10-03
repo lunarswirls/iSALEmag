@@ -1,0 +1,7 @@
+body,era,background_bx_t,background_by_t,background_bz_t,local_bx_t,local_by_t,local_bz_t,ambient_temperature_k,heated_temperature_k,pressure_half_pa,trm_a_m_per_t
+moon,ancient,0,0,0.00005,0,0,0,293,1200,3000000000,20000
+moon,present,0,0,0,0,0,0,293,1200,3000000000,20000
+mars,ancient,0,0,0.00005,0,0,0,293,1200,3000000000,20000
+mars,present,0,0,0,0,0,0,293,1200,3000000000,20000
+mercury,ancient,0,0,0.00005,0,0,0,293,1200,3000000000,20000
+mercury,present,0,0,0.0000002,0,0,0,293,1200,3000000000,20000
