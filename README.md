@@ -31,6 +31,44 @@ The present Mercury case uses a constant 200 nT reference vector as a weak-field
 
 ## Inputs and use
 
+### Lunar central-peak depth-to-diameter test
+
+```bash
+PYTHONPATH=src MPLCONFIGDIR=/tmp/isalemag-mpl MPLBACKEND=Agg /Users/danywaller/code/venvs/gravmagpy/bin/python examples/lunar_central_peak_depth_ratio.py
+```
+
+The script tests 50, 75, and 100 km synthetic lunar craters over `d/D = 0.04–0.10` for mare and highlands terrains, using the existing ancient and present lunar field scenarios. Here `d` is **rim-to-floor depth excluding central-peak relief**, and `D` is rim-to-rim diameter. All experiment settings are near the top of the new script; lunar field and TRM settings remain in `examples/planetary_scenarios.csv`.
+
+Reference depths and peak heights use the complex-crater fits in [Kalynn et al. (2013), Table 1](https://doi.org/10.1029/2012GL053608), with all lengths in km:
+
+| Terrain | Reference depth | Reference peak height above floor |
+|---|---|---|
+| Mare | `d = 0.870 D^0.352` | `h = 0.075 D^0.614` |
+| Highlands | `d = 1.558 D^0.254` | `h = 0.034 D^0.883` |
+
+The sweep changes depth while keeping the reference peak height fixed at each diameter and terrain. The reference d/D values appear as vertical dotted lines in the sensitivity plot. These are reference morphometry fits, not constraints that every synthetic case satisfies. Mare and highlands labels change only the morphometric reference; the script uses shared magnetic and thermal properties rather than separate lithology models.
+
+The assumed geometry is a flat-floor crater with sloping walls and a paraboloid central peak. Peak radius, floor radius, uplift radius, and uplift amplitude are adjustable. The default uplift translates source material upward by a radial profile whose central amplitude is twice the crater depth. This vertical translation preserves cell volume before excavation; material above the final surface is removed from the sampled target. The original surface and rim share a zero-elevation datum, so rim uplift and ejecta are omitted.
+
+Magnetization is computed in original source coordinates with the same prescribed pressure/heating profiles at each diameter across the depth-ratio sweep. Changing d/D then changes which source material is sampled by the peak and floor. The prescribed uplift law is the link between morphology and source depth; it is not a published reconstruction or an iSALE result. Crater depth alone does not uniquely specify heating, pressure, or central-peak magnetization. Scaling both the grid and imposed pressure/heating lengths with diameter also makes the fields self-similar; no impact-energy scaling is inferred from diameter.
+
+The **central-peak region includes only relief above the nominal crater floor**, excluding buried roots. A separate floor region samples an annulus beneath the flat floor to a thickness of 0.02 D. Annular volume weights and partial-cell intersections ensure that thin peaks retain their volume rather than vanishing between tracer centers. Source-cell magnetization is treated as uniform within each cell; increase the radial/depth resolution to assess convergence of the magnetic means.
+
+The thermal history has three prescribed states: initially cold, heated, and fully cooled. With a constant ambient field and the existing blocking-threshold model this computes the final cooled remanence without a cooling-rate calculation. The endpoint time is bookkeeping, not a thermal prediction. Magnetic vectors remain in the same fixed frame during uplift; deformation, rotation, ejecta, mineral changes, and peak formation dynamics are not simulated.
+
+Outputs are written under `output/lunar_central_peak_depth_ratio/`:
+
+- `magnetization_summary.csv`: volume-weighted inherited, acquired, and total vectors, magnetic moments, source depths, thermal resetting, and pressure for each peak and floor case
+- `central_peak_cells.csv`: source-cell contributions and partial peak volumes
+- `source_magnetization.csv`: magnetic responses before geometry selection, reused across the ratio sweep
+- `geometry_cases.csv`, `field_scenarios.csv`, `blocking_spectrum.csv`, and `experiment_parameters.csv`: saved inputs
+- `depth_ratio_magnetization.png`: peak/floor mean magnetization versus d/D for all diameters and terrains
+- `central_peak_cross_sections.png` and `cross_section_cells.csv`: shallow, middle, and deep examples for the middle diameter, highlands terrain, and ancient field
+
+The plotted mean is the magnitude of the volume-averaged total vector. The summary also includes the mean of local magnitudes, which can differ when magnetizations cancel. Magnetic moments use A m²; this script computes magnetization and does not predict orbital magnetic anomalies.
+
+### Common dataframe interface
+
 | Dataframe | Required columns | Meaning |
 |---|---|---|
 | `history` | `tracer_id`, `time_s`, `temperature_k` | One sample per tracer and time; arbitrary additional columns are preserved |
